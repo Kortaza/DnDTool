@@ -23,8 +23,10 @@ APlayableCharacter::APlayableCharacter()
 	StatueCharacter = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StatueCharacter"));
 	StatueCharacter->SetupAttachment(StatueBase);
 
-	//static ConstructorHelpers::FObjectFinder<UStaticMeshComponent>CubeAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
-	//StatueBase->SetStaticMesh(CubeAsset.Object);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>CubeAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	StatueBase->SetStaticMesh(CubeAsset.Object);
+	StatueBase->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.1f));
+	StatueBase->SetRelativeLocation(FVector(0.0f, 0.05f, 0.0f));
 }
 
 // Called when the game starts or when spawned
