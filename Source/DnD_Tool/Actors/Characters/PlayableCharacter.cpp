@@ -3,6 +3,8 @@
 #include "PlayableCharacter.h"
 #include <ConstructorHelpers.h>
 
+#include <Components/StaticMeshComponent.h>
+
 // Static Variables
 int APlayableCharacter::kGridSize = 100;
 float APlayableCharacter::kGridSpeed = 2.0f * APlayableCharacter::kGridSize;
