@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "PlayableCharacter.generated.h"
 
 UCLASS()
@@ -12,35 +13,36 @@ class DND_TOOL_API APlayableCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	APlayableCharacter();
+	virtual void Tick(float DeltaTime) override;
+	virtual void StartMovement(FVector Location);
+	virtual void UpdateMovement(float DeltaTime);
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	//
-	int GetGridSize() { return kGridSize; }
-
+// VARIABLES
 public:
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		USceneComponent* Origin;
 
-	UPROPERTY(VisibleAnywhere, Category="Viewport")
-		UStaticMeshComponent* StatueCharacter;
-
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		UStaticMeshComponent* StatueBase;
 
+	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+		USkeletalMeshComponent* StatueCharacter;
+
 private:
-	static int kGridSize;
-	static float kGridSpeed;
+	float CharacterSpeed_Units;
+	//float CharacterSpeed_Feet;
+	float DistanceLerpSpeed_Units;
+
+	// Movement Tracking
+	bool Moving;
+	FVector StartLocation;
+	FVector EndLocation;
+	float MovementLerp;
+	float DeltaModifier;
+
 };
 

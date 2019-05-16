@@ -1,32 +1,71 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharacter.h"
-#include <ConstructorHelpers.h>
-
-#include <Components/StaticMeshComponent.h>
-
-// Static Variables
-int APlayableCharacter::kGridSize = 100;
-float APlayableCharacter::kGridSpeed = 2.0f * APlayableCharacter::kGridSize;
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 APlayableCharacter::APlayableCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	CharacterSpeed_Units = 300.0f;
+	DistanceLerpSpeed_Units = 300.0f;
 
-	//
 	Origin = CreateDefaultSubobject<USceneComponent>(TEXT("Origin"));
 	Origin->SetupAttachment(RootComponent);
+
 	StatueBase = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StatueBase"));
 	StatueBase->SetupAttachment(Origin);
-	StatueCharacter = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StatueCharacter"));
-	StatueCharacter->SetupAttachment(StatueBase);
+	StatueBase->SetRelativeLocation(FVector(0.0f, 0.0f, 0.005f));
+	StatueBase->SetRelativeScale3D(FVector(0.45f, 0.45f, 0.01f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>CubeAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
-	StatueBase->SetStaticMesh(CubeAsset.Object);
-	StatueBase->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.1f));
-	StatueBase->SetRelativeLocation(FVector(0.0f, 0.05f, 0.0f));
+	StatueCharacter = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("StatueCharacter"));
+	StatueCharacter->SetupAttachment(Origin);
+	StatueCharacter->SetRelativeLocation(FVector(0.0f, 0.0f, 1.0f));
+	StatueCharacter->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+}
+
+// Called every frame
+void APlayableCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	UpdateMovement(DeltaTime);
+}
+
+//
+void APlayableCharacter::StartMovement(FVector Location)
+{
+	// Set Location start/end and reset movement variables
+	EndLocation = Location;
+	StartLocation = GetActorLocation();
+	Moving = true;
+	MovementLerp = 0.0f;
+
+	// Set the modifier for the deltaTime based on the distance moved and the lerp speed of the character
+	DeltaModifier = (EndLocation - StartLocation).Size() / DistanceLerpSpeed_Units;
+}
+
+//
+void APlayableCharacter::UpdateMovement(float DeltaTime)
+{
+	if (Moving == false)
+	{
+		return;	// Return out if not moving
+	}
+
+	// Calculate the new MovementLerp and clamp to prevent overshooting
+	MovementLerp += DeltaTime / DeltaModifier;
+	MovementLerp = FMath::Clamp(MovementLerp, 0.0f, 1.0f);
+
+	// Set the actors new location
+	SetActorLocation(FMath::Lerp(StartLocation, EndLocation, MovementLerp));
+
+	if (MovementLerp >= 1.0f)
+	{
+		Moving = false;	// Stop moving once destination has been reached
+	}
 }
 
 // Called when the game starts or when spawned
@@ -35,18 +74,3 @@ void APlayableCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 }
-
-// Called every frame
-void APlayableCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

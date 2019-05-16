@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "CameraPawn.h"
+#include "PlayableCharacter.h"
 
 #include "PlayableCharController.generated.h"
 
@@ -20,14 +21,18 @@ class DND_TOOL_API APlayableCharController : public APlayerController
 	
 public:
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 	void MouseClickMovement();
 	
 protected:
 	FVector LocateTileCenter(FVector ClickPos);
+	virtual void CameraMovement_Forward(float AxisValue);
+	virtual void CameraMovement_Right(float AxisValue);
 
 	// Variables
 public:
 
 protected:
 	ACameraPawn* CameraPawn;
+	APlayableCharacter* CharacterPawn;
 };
