@@ -1,14 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharacter.h"
+#include "PlayableCharController.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
+#include "Engine.h"
+
 // Sets default values
-APlayableCharacter::APlayableCharacter()
+APlayableCharacter::APlayableCharacter(const FObjectInitializer& ObjectInitializer)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
 	CharacterSpeed_Units = 300.0f;
 	DistanceLerpSpeed_Units = 300.0f;
@@ -72,5 +76,4 @@ void APlayableCharacter::UpdateMovement(float DeltaTime)
 void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }

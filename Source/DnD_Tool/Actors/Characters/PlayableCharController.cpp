@@ -5,12 +5,15 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "System/Globals.h"
 
+#include "Engine.h"
+
 void APlayableCharController::BeginPlay()
 {
+	Super::BeginPlay();
 	bShowMouseCursor = true;	// Show the Mouse at all times
 
-	CharacterPawn = (APlayableCharacter*)GetPawn();
-
+	CharacterPawn = Cast<APlayableCharacter>(GetPawn());
+	
 	UWorld* world = GetWorld();
 	if (world)
 	{
@@ -30,6 +33,8 @@ void APlayableCharController::SetupInputComponent()
 
 void APlayableCharController::MouseClickMovement()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::FString("APlayableCharController::MouseClickMovement()"));
+
 	// Find the Mouse 3D position and direction from the screen
 	FVector MousePos, MouseDir;
 	DeprojectMousePositionToWorld(MousePos, MouseDir);

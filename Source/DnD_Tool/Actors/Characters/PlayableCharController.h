@@ -23,7 +23,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	void MouseClickMovement();
-	
+
 protected:
 	FVector LocateTileCenter(FVector ClickPos);
 	virtual void CameraMovement_Forward(float AxisValue);
@@ -34,5 +34,7 @@ public:
 
 protected:
 	ACameraPawn* CameraPawn;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Pawn")
 	APlayableCharacter* CharacterPawn;
 };

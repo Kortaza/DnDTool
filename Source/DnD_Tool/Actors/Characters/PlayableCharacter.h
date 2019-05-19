@@ -13,7 +13,7 @@ class DND_TOOL_API APlayableCharacter : public APawn
 	GENERATED_BODY()
 
 public:
-	APlayableCharacter();
+	APlayableCharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void Tick(float DeltaTime) override;
 	virtual void StartMovement(FVector Location);
 	virtual void UpdateMovement(float DeltaTime);
