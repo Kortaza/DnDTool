@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Ground.h"
+#include "System/Globals.h"
+
+#include "Engine.h"
 
 
 // Sets default values
@@ -20,6 +23,38 @@ void AGround::Tick(float DeltaTime)
 
 }
 
+void AGround::ChangeGridSize_BPHook_Implementation(int DimensionX, int DimensionY)
+{
+	// Empty
+}
+
+void AGround::ChangeGridSize(int DimensionX, int DimensionY)
+{
+	while (TileArray.empty() == false)
+	{
+		while (TileArray.back()->empty() == false)
+		{
+			(TileArray.back())->back()->Destroy();
+			(TileArray.back())->pop_back();
+		}
+		TileArray.pop_back();
+	}
+	
+	FVector OriginLoc = GetActorLocation();
+	FVector scale = GetActorScale3D();
+	for (int Col = 0; Col < scale.X; Col++)
+	{
+		std::vector<AGroundTile*>* tempArray = new std::vector<AGroundTile*>();
+		TileArray.push_back(tempArray);
+		for (int Row = 0; Row < scale.Y; Row++)
+		{
+			FVector Loc = FVector(Col * Globals::GridSize + OriginLoc.X, Row * Globals::GridSize + OriginLoc.Y, OriginLoc.Z);
+			AGroundTile* Tile = GetWorld()->SpawnActor<AGroundTile>(GroundTileParent, Loc, FRotator(0.0f, 0.0f, 0.0f));
+			TileArray[Col]->push_back(Tile);
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AGround::BeginPlay()
 {
@@ -27,5 +62,14 @@ void AGround::BeginPlay()
 	
 }
 
+void AGround::PostEditChangeProperty(struct FPropertyChangedEvent& e)
+{
+	Super::PostEditChangeProperty(e);
+
+	
+
+	
+
+}
 
 

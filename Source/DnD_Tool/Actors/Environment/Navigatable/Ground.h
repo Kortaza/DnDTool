@@ -17,15 +17,24 @@ public:
 	AGround();
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintNativeEvent)
+		void ChangeGridSize_BPHook(int DimensionX, int DimensionY);
+
+	UFUNCTION(BlueprintCallable)
+		void ChangeGridSize(int DimensionX, int DimensionY);
+
 protected:
 	virtual void BeginPlay() override;
-	//virtual void OnConstruction(FTransform& Transform) override;
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 
 	// VARIABLES
 public:	
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		USceneComponent* Origin;
+
+	UPROPERTY(EditAnywhere, Category = "Viewport")
+		TSubclassOf<AGroundTile> GroundTileParent;
 	
 protected:
-	std::vector< std::vector<AGroundTile*>*>* TileArray;
+	std::vector< std::vector<AGroundTile*>*> TileArray;
 };

@@ -25,7 +25,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		UStaticMeshComponent* BaseMesh;
-
-	
-	
 };

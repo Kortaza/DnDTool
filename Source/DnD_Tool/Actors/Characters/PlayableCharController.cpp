@@ -33,8 +33,6 @@ void APlayableCharController::SetupInputComponent()
 
 void APlayableCharController::MouseClickMovement()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::FString("APlayableCharController::MouseClickMovement()"));
-
 	// Find the Mouse 3D position and direction from the screen
 	FVector MousePos, MouseDir;
 	DeprojectMousePositionToWorld(MousePos, MouseDir);
