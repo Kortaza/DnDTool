@@ -41,6 +41,7 @@ void ACameraPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
+//
 void ACameraPawn::SetMovement(FVector MoveDir)
 {
 	MovementDirection += MoveDir;

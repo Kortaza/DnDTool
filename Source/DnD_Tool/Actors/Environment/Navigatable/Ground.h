@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GroundTile.h"
+#include <vector>
 #include "Ground.generated.h"
 
 UCLASS()
@@ -12,17 +14,18 @@ class DND_TOOL_API AGround : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AGround();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
+	//virtual void OnConstruction(FTransform& Transform) override;
+
+	// VARIABLES
+public:	
+	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+		USceneComponent* Origin;
 	
-	
+protected:
+	std::vector< std::vector<AGroundTile*>*>* TileArray;
 };

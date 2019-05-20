@@ -12,16 +12,19 @@ class DND_TOOL_API AGroundTile : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AGroundTile();
+	virtual void Tick(float DeltaTime) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// VARIABLES
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+		USceneComponent* Origin;
+
+	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+		UStaticMeshComponent* BaseMesh;
 
 	
 	
