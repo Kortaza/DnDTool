@@ -9,7 +9,7 @@
 
 #include "PlayableCharController.generated.h"
 
-#define ECC_Navigation ECC_GameTraceChannel1
+
 
 /**
  * 
@@ -26,15 +26,18 @@ public:
 
 protected:
 	FVector LocateTileCenter(FVector ClickPos);
-	virtual void CameraMovement_Forward(float AxisValue);
-	virtual void CameraMovement_Right(float AxisValue);
+	virtual void Camera_MovementForward(float AxisValue);
+	virtual void Camera_MovementRight(float AxisValue);
+	virtual void Camera_Zoom(float AxisValue);
 
 	// Variables
 public:
 
 protected:
 	ACameraPawn* CameraPawn;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Pawn")
 	APlayableCharacter* CharacterPawn;
+
+	float CameraZoomMuliplier;
+	float MaxCameraDistance;
+	float MinCameraDistance;
 };

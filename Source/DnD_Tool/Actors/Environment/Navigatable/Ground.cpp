@@ -41,12 +41,11 @@ void AGround::ChangeGridSize(int DimensionX, int DimensionY)
 	}
 	
 	FVector OriginLoc = GetActorLocation();
-	FVector scale = GetActorScale3D();
-	for (int Col = 0; Col < scale.X; Col++)
+	for (int Col = 0; Col < DimensionX; Col++)
 	{
 		std::vector<AGroundTile*>* tempArray = new std::vector<AGroundTile*>();
 		TileArray.push_back(tempArray);
-		for (int Row = 0; Row < scale.Y; Row++)
+		for (int Row = 0; Row < DimensionY; Row++)
 		{
 			FVector Loc = FVector(Col * Globals::GridSize + OriginLoc.X, Row * Globals::GridSize + OriginLoc.Y, OriginLoc.Z);
 			AGroundTile* Tile = GetWorld()->SpawnActor<AGroundTile>(GroundTileParent, Loc, FRotator(0.0f, 0.0f, 0.0f));

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#define ECC_Navigation ECC_GameTraceChannel1
+
 namespace Globals
 {
 	const float GridSize = 50.0f;

@@ -12,6 +12,11 @@ void APlayableCharController::BeginPlay()
 	Super::BeginPlay();
 	bShowMouseCursor = true;	// Show the Mouse at all times
 
+	// Set basic variables
+	CameraZoomMuliplier = 20.0f;
+	MaxCameraDistance = 200.0f;
+	MinCameraDistance = 2000.0f;
+
 	CharacterPawn = Cast<APlayableCharacter>(GetPawn());
 	
 	UWorld* world = GetWorld();
@@ -27,8 +32,9 @@ void APlayableCharController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	InputComponent->BindAction("MouseClick", IE_Pressed , this, &APlayableCharController::MouseClickMovement);
-	InputComponent->BindAxis("Movement_Forward", this, &APlayableCharController::CameraMovement_Forward);
-	InputComponent->BindAxis("Movement_Right", this, &APlayableCharController::CameraMovement_Right);
+	InputComponent->BindAxis("Camera_MovementForward", this, &APlayableCharController::Camera_MovementForward);
+	InputComponent->BindAxis("Camera_MovementRight", this, &APlayableCharController::Camera_MovementRight);
+	InputComponent->BindAxis("Camera_Zoom", this, &APlayableCharController::Camera_Zoom);
 }
 
 void APlayableCharController::MouseClickMovement()
@@ -68,13 +74,19 @@ FVector APlayableCharController::LocateTileCenter(FVector ClickPos)
 }
 
 //
-void APlayableCharController::CameraMovement_Forward(float AxisValue)
+void APlayableCharController::Camera_MovementForward(float AxisValue)
 {
 	CameraPawn->SetMovement(AxisValue * FVector(1.0f, 0.0f, 0.0f));
 }
 
 //
-void APlayableCharController::CameraMovement_Right(float AxisValue)
+void APlayableCharController::Camera_MovementRight(float AxisValue)
 {
 	CameraPawn->SetMovement(AxisValue * FVector(0.0f, 1.0f, 0.0f));
+}
+
+//
+void APlayableCharController::Camera_Zoom(float AxisValue)
+{
+	float Delta = AxisValue * CameraZoomMuliplier;
 }

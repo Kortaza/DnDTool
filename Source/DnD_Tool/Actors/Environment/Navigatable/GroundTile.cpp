@@ -2,6 +2,7 @@
 
 #include "GroundTile.h"
 #include "Components/StaticMeshComponent.h"
+#include "System/Globals.h"
 
 
 // Sets default values
@@ -17,6 +18,7 @@ AGroundTile::AGroundTile()
 	BaseMesh->SetupAttachment(Origin);
 	BaseMesh->SetRelativeLocation(FVector(25.0f, 25.0f, 0.0f));
 	BaseMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
+	BaseMesh->SetCollisionResponseToChannel(ECC_Navigation, ECollisionResponse::ECR_Block);
 }
 
 // Called every frame
@@ -30,7 +32,7 @@ void AGroundTile::Tick(float DeltaTime)
 void AGroundTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	BaseMesh->SetCollisionResponseToChannel(ECC_Navigation, ECollisionResponse::ECR_Block);
 }
 
 
