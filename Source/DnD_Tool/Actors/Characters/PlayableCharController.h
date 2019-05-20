@@ -38,6 +38,6 @@ protected:
 	APlayableCharacter* CharacterPawn;
 
 	float CameraZoomMuliplier;
-	float MaxCameraDistance;
 	float MinCameraDistance;
+	float MaxCameraDistance;
 };

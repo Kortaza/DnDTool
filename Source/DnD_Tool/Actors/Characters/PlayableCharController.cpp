@@ -14,8 +14,8 @@ void APlayableCharController::BeginPlay()
 
 	// Set basic variables
 	CameraZoomMuliplier = 20.0f;
-	MaxCameraDistance = 200.0f;
-	MinCameraDistance = 2000.0f;
+	MinCameraDistance = 200.0f;
+	MaxCameraDistance = 2000.0f;
 
 	CharacterPawn = Cast<APlayableCharacter>(GetPawn());
 	
@@ -88,5 +88,10 @@ void APlayableCharController::Camera_MovementRight(float AxisValue)
 //
 void APlayableCharController::Camera_Zoom(float AxisValue)
 {
-	float Delta = AxisValue * CameraZoomMuliplier;
+	if (FMath::Abs(AxisValue) > 0.1f)
+	{
+		float Delta = AxisValue * CameraZoomMuliplier;
+		CameraPawn->SpringArm->TargetArmLength = FMath::Clamp(CameraPawn->SpringArm->TargetArmLength + Delta, MinCameraDistance, MaxCameraDistance);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString(FString::SanitizeFloat(CameraPawn->SpringArm->TargetArmLength)));
+	}
 }
