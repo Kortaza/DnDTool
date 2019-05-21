@@ -22,13 +22,17 @@ class DND_TOOL_API APlayableCharController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
-	void MouseClickMovement();
+	
 
 protected:
-	FVector LocateTileCenter(FVector ClickPos);
+	// Input Bindings
+	virtual void MouseClickMovement();
 	virtual void Camera_MovementForward(float AxisValue);
 	virtual void Camera_MovementRight(float AxisValue);
 	virtual void Camera_Zoom(float AxisValue);
+
+	FVector LocateTileCenter(FVector ClickPos);
+
 
 	// Variables
 public:

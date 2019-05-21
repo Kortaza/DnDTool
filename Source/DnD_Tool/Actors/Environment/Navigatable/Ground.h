@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include <vector>
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GroundTile.h"
-#include <vector>
 #include "Ground.generated.h"
 
 UCLASS()
@@ -17,15 +18,12 @@ public:
 	AGround();
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintNativeEvent)
-		void ChangeGridSize_BPHook(int DimensionX, int DimensionY);
-
-	UFUNCTION(BlueprintCallable)
-		void ChangeGridSize(int DimensionX, int DimensionY);
+	//UFUNCTION(BlueprintCallable)
+	//	void ChangeGridSize(int DimensionX, int DimensionY);
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
+	//virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 
 	// VARIABLES
 public:	

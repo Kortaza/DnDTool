@@ -23,36 +23,31 @@ void AGround::Tick(float DeltaTime)
 
 }
 
-void AGround::ChangeGridSize_BPHook_Implementation(int DimensionX, int DimensionY)
-{
-	// Empty
-}
-
-void AGround::ChangeGridSize(int DimensionX, int DimensionY)
-{
-	while (TileArray.empty() == false)
-	{
-		while (TileArray.back()->empty() == false)
-		{
-			(TileArray.back())->back()->Destroy();
-			(TileArray.back())->pop_back();
-		}
-		TileArray.pop_back();
-	}
-	
-	FVector OriginLoc = GetActorLocation();
-	for (int Col = 0; Col < DimensionX; Col++)
-	{
-		std::vector<AGroundTile*>* tempArray = new std::vector<AGroundTile*>();
-		TileArray.push_back(tempArray);
-		for (int Row = 0; Row < DimensionY; Row++)
-		{
-			FVector Loc = FVector(Col * Globals::GridSize + OriginLoc.X, Row * Globals::GridSize + OriginLoc.Y, OriginLoc.Z);
-			AGroundTile* Tile = GetWorld()->SpawnActor<AGroundTile>(GroundTileParent, Loc, FRotator(0.0f, 0.0f, 0.0f));
-			TileArray[Col]->push_back(Tile);
-		}
-	}
-}
+//void AGround::ChangeGridSize(int DimensionX, int DimensionY)
+//{
+//	while (TileArray.empty() == false)
+//	{
+//		while (TileArray.back()->empty() == false)
+//		{
+//			(TileArray.back())->back()->Destroy();
+//			(TileArray.back())->pop_back();
+//		}
+//		TileArray.pop_back();
+//	}
+//	
+//	FVector OriginLoc = GetActorLocation();
+//	for (int Col = 0; Col < DimensionX; Col++)
+//	{
+//		std::vector<AGroundTile*>* tempArray = new std::vector<AGroundTile*>();
+//		TileArray.push_back(tempArray);
+//		for (int Row = 0; Row < DimensionY; Row++)
+//		{
+//			FVector Loc = FVector(Col * Globals::GridSize + OriginLoc.X, Row * Globals::GridSize + OriginLoc.Y, OriginLoc.Z);
+//			AGroundTile* Tile = GetWorld()->SpawnActor<AGroundTile>(GroundTileParent, Loc, FRotator(0.0f, 0.0f, 0.0f));
+//			TileArray[Col]->push_back(Tile);
+//		}
+//	}
+//}
 
 // Called when the game starts or when spawned
 void AGround::BeginPlay()
@@ -61,14 +56,9 @@ void AGround::BeginPlay()
 	
 }
 
-void AGround::PostEditChangeProperty(struct FPropertyChangedEvent& e)
-{
-	Super::PostEditChangeProperty(e);
-
-	
-
-	
-
-}
+//void AGround::PostEditChangeProperty(struct FPropertyChangedEvent& e)
+//{
+//	Super::PostEditChangeProperty(e);
+//}
 
 

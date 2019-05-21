@@ -37,6 +37,7 @@ void APlayableCharController::SetupInputComponent()
 	InputComponent->BindAxis("Camera_Zoom", this, &APlayableCharController::Camera_Zoom);
 }
 
+//
 void APlayableCharController::MouseClickMovement()
 {
 	// Find the Mouse 3D position and direction from the screen
@@ -54,23 +55,6 @@ void APlayableCharController::MouseClickMovement()
 			CharacterPawn->StartMovement(LocateTileCenter(HitResult.Location));
 		}
 	}
-}
-
-FVector APlayableCharController::LocateTileCenter(FVector ClickPos)
-{
-	// Find the clicked tile and the origin point (bottom left corner) 
-	float ModX, ModY;
-	UKismetMathLibrary::FMod(ClickPos.X, Globals::GridSize, ModX);
-	UKismetMathLibrary::FMod(ClickPos.Y, Globals::GridSize, ModY);
-	FVector TileOrigin = FVector(ClickPos.X - ModX, ClickPos.Y - ModY, ClickPos.Z);
-
-	// Calculate the offset to get the center of the tile
-	float OffsetX, OffsetY;
-	OffsetX = UKismetMathLibrary::SignOfFloat(ClickPos.X) * (Globals::GridSize * 0.5f);	// Using sign to account for negative values
-	OffsetY = UKismetMathLibrary::SignOfFloat(ClickPos.Y) * (Globals::GridSize * 0.5f);	// Using sign to account for negative values
-	FVector TileOffset = FVector(OffsetX, OffsetY, 0.0f);
-
-	return (TileOrigin + TileOffset);
 }
 
 //
@@ -92,6 +76,24 @@ void APlayableCharController::Camera_Zoom(float AxisValue)
 	{
 		float Delta = AxisValue * CameraZoomMuliplier;
 		CameraPawn->SpringArm->TargetArmLength = FMath::Clamp(CameraPawn->SpringArm->TargetArmLength + Delta, MinCameraDistance, MaxCameraDistance);
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString(FString::SanitizeFloat(CameraPawn->SpringArm->TargetArmLength)));
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString(FString::SanitizeFloat(CameraPawn->SpringArm->TargetArmLength)));
 	}
+}
+
+//
+FVector APlayableCharController::LocateTileCenter(FVector ClickPos)
+{
+	// Find the clicked tile and the origin point (bottom left corner) 
+	float ModX, ModY;
+	UKismetMathLibrary::FMod(ClickPos.X, Globals::GridSize, ModX);
+	UKismetMathLibrary::FMod(ClickPos.Y, Globals::GridSize, ModY);
+	FVector TileOrigin = FVector(ClickPos.X - ModX, ClickPos.Y - ModY, ClickPos.Z);
+
+	// Calculate the offset to get the center of the tile
+	float OffsetX, OffsetY;
+	OffsetX = UKismetMathLibrary::SignOfFloat(ClickPos.X) * (Globals::GridSize * 0.5f);	// Using sign to account for negative values
+	OffsetY = UKismetMathLibrary::SignOfFloat(ClickPos.Y) * (Globals::GridSize * 0.5f);	// Using sign to account for negative values
+	FVector TileOffset = FVector(OffsetX, OffsetY, 0.0f);
+
+	return (TileOrigin + TileOffset);
 }
