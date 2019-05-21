@@ -12,11 +12,13 @@ ACameraPawn::ACameraPawn()
 
 	Origin = CreateDefaultSubobject<USceneComponent>(TEXT("Origin"));
 	Origin->SetupAttachment(RootComponent);
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(Origin);
 	SpringArm->SetRelativeRotation(FRotator(-70.0f, 0.0f, 0.0f));
 	SpringArm->TargetArmLength = 600.0f;
 	SpringArm->bDoCollisionTest = false;
+
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 }

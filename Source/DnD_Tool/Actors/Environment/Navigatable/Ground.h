@@ -21,6 +21,7 @@ class DND_TOOL_API AGround : public AActor
 public:	
 	AGround();
 	virtual void Tick(float DeltaTime) override;
+	virtual void DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation);
 
 	//UFUNCTION(BlueprintCallable)
 	//	void ChangeGridSize(int DimensionX, int DimensionY);
@@ -29,7 +30,7 @@ protected:
 	virtual void BeginPlay() override;
 	//virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 
-	virtual void DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation);
+	
 
 
 	// VARIABLES
@@ -37,7 +38,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		USceneComponent* Origin;
 
-	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Viewport")
 		UStaticMeshComponent* GroundPlane;
 
 	UPROPERTY(EditAnywhere, Category = "Texture Editing")
@@ -51,7 +52,7 @@ public:
 
 	
 protected:
-	std::vector< std::vector<AGroundTile*>*> TileArray;
+	//std::vector< std::vector<AGroundTile*>*> TileArray;
 	UTextureRenderTarget2D* RenderTarget;
 	UMaterialInstanceDynamic* Mat_Canvas;
 	UMaterialInstanceDynamic* Mat_Brush;

@@ -20,6 +20,7 @@ class DND_TOOL_API APlayableCharController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	APlayableCharController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 	
@@ -45,4 +46,8 @@ protected:
 	float CameraZoomMuliplier;
 	float MinCameraDistance;
 	float MaxCameraDistance;
+
+	// Editor Variables - Should move to Editor Controller in future
+	UPROPERTY(EditAnywhere, Category = "Editor Textures")
+	UTexture2D* Tex_BasicGrass;
 };

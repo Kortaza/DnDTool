@@ -1,11 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharController.h"
+#include "Actors/Environment/Navigatable/Ground.h"
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "System/Globals.h"
 
 #include "Engine.h"
+
+APlayableCharController::APlayableCharController(const FObjectInitializer& ObjectInitializer)
+{
+	//static ConstructorHelpers::FObjectFinder<UTexture2D> Texture2D(TEXT("Texture2D'/Game/Materials/Textures/BasicGrass.BasicGrass'"));
+	//Tex_BasicGrass = Texture2D.Object;
+}
 
 void APlayableCharController::BeginPlay()
 {
@@ -83,7 +90,50 @@ void APlayableCharController::Camera_Zoom(float AxisValue)
 
 void APlayableCharController::Editor_Paint(float AxisValue)
 {
+	if (AxisValue == 1.0f)
+	{
+		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString("APlayableCharController::Editor_Paint()"));
+		// Find the Mouse 3D position and direction from the screen
+		FVector MousePos, MouseDir;
+		DeprojectMousePositionToWorld(MousePos, MouseDir);
 
+		UWorld* world = GetWorld();
+		if (world)
+		{
+			// Raycast from the screen position onto the game world
+			FHitResult HitResult;
+			FCollisionQueryParams QueryParams = FCollisionQueryParams();
+			QueryParams.bTraceComplex = true;
+			if (world->LineTraceSingleByChannel(HitResult, MousePos, MousePos + (MouseDir * 10000.0f), ECC_Navigation, QueryParams))
+			{
+				// 
+				FVector2D DrawLocation;
+				//bool bSuccess = false;
+				//UPrimitiveComponent* HitPrimComp = HitResult.Component.Get();
+				//if (HitPrimComp)
+				//{
+				//	UBodySetup* BodySetup = HitPrimComp->GetBodySetup();
+				//	if (BodySetup)
+				//	{
+				//		const FVector LocalHitPos = HitPrimComp->GetComponentToWorld().InverseTransformPosition(HitResult.Location);
+				//
+				//		bSuccess = BodySetup->CalcUVAtLocation(LocalHitPos, HitResult.FaceIndex, 0, DrawLocation);
+				//	}
+				//}
+
+				if (UGameplayStatics::FindCollisionUV(HitResult, 0, DrawLocation))
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "FindCollisionUV = True");
+				}
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "PLAYERCHARCON = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
+				AGround* Ground = Cast<AGround>(HitResult.Actor);
+				if (Ground)
+				{
+					Ground->DrawBrush(Tex_BasicGrass, Globals::GridSize, DrawLocation);
+				}
+			}
+		}
+	}
 }
 
 //

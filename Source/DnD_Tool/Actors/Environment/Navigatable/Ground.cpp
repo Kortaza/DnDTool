@@ -62,6 +62,7 @@ void AGround::BeginPlay()
 	
 	Mat_Canvas = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Canvas);
 	Mat_Canvas->SetTextureParameterValue("RenderTarget", RenderTarget);
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, GroundPlane->GetName());
 	GroundPlane->SetMaterial(0, Mat_Canvas);
 
 	Mat_Brush = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Brush);
@@ -74,13 +75,19 @@ void AGround::BeginPlay()
 
 void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString("AGround::DrawBrush()"));
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, BrushTexture->GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(BrushSize));
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "GROUND = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
+
 	Mat_Brush->SetTextureParameterValue("BrushTexture", BrushTexture);
 
 	UCanvas* Canvas;
 	FVector2D CanvasSize;
 	FDrawToRenderTargetContext CanvasContext;
-	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, CanvasSize, CanvasContext);
 
+	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, CanvasSize, CanvasContext);
 	FVector2D ScreenPos = (CanvasSize * DrawLocation) - (BrushSize * 0.5f);
 	Canvas->K2_DrawMaterial(Mat_Brush, ScreenPos, FVector2D(BrushSize, BrushSize), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f), 90.0f, FVector2D(0.5f, 0.5f));
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CanvasContext);
