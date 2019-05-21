@@ -7,6 +7,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GroundTile.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/KismetRenderingLibrary.h"
+#include "Kismet/KismetMaterialLibrary.h"
+
 #include "Ground.generated.h"
 
 UCLASS()
@@ -25,14 +29,30 @@ protected:
 	virtual void BeginPlay() override;
 	//virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 
+	virtual void DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation);
+
+
 	// VARIABLES
 public:	
 	UPROPERTY(VisibleAnywhere, Category = "Viewport")
 		USceneComponent* Origin;
 
-	UPROPERTY(EditAnywhere, Category = "Viewport")
+	UPROPERTY(VisibleAnywhere, Category = "Viewport")
+		UStaticMeshComponent* GroundPlane;
+
+	UPROPERTY(EditAnywhere, Category = "Texture Editing")
 		TSubclassOf<AGroundTile> GroundTileParent;
+
+	UPROPERTY(EditAnywhere, Category = "Texture Editing")
+		UMaterialInterface* MatInterface_Canvas;
+
+	UPROPERTY(EditAnywhere, Category = "Texture Editing")
+		UMaterialInterface* MatInterface_Brush;
+
 	
 protected:
 	std::vector< std::vector<AGroundTile*>*> TileArray;
+	UTextureRenderTarget2D* RenderTarget;
+	UMaterialInstanceDynamic* Mat_Canvas;
+	UMaterialInstanceDynamic* Mat_Brush;
 };

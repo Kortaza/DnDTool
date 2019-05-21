@@ -30,6 +30,7 @@ protected:
 	virtual void Camera_MovementForward(float AxisValue);
 	virtual void Camera_MovementRight(float AxisValue);
 	virtual void Camera_Zoom(float AxisValue);
+	virtual void Editor_Paint(float AxisValue);
 
 	FVector LocateTileCenter(FVector ClickPos);
 

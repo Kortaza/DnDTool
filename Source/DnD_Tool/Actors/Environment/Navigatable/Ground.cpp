@@ -14,6 +14,9 @@ AGround::AGround()
 
 	Origin = CreateDefaultSubobject<USceneComponent>(TEXT("Origin"));
 	Origin->SetupAttachment(RootComponent);
+
+	GroundPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GroundPlane"));
+	GroundPlane->SetupAttachment(Origin);
 }
 
 // Called every frame
@@ -54,6 +57,14 @@ void AGround::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, 1000, 1000);
+	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
+	
+	Mat_Canvas = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Canvas);
+	Mat_Canvas->SetTextureParameterValue("RenderTarget", RenderTarget);
+	GroundPlane->SetMaterial(0, Mat_Canvas);
+
+	Mat_Brush = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Brush);
 }
 
 //void AGround::PostEditChangeProperty(struct FPropertyChangedEvent& e)
@@ -61,4 +72,17 @@ void AGround::BeginPlay()
 //	Super::PostEditChangeProperty(e);
 //}
 
+void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation)
+{
+	Mat_Brush->SetTextureParameterValue("BrushTexture", BrushTexture);
+
+	UCanvas* Canvas;
+	FVector2D CanvasSize;
+	FDrawToRenderTargetContext CanvasContext;
+	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, CanvasSize, CanvasContext);
+
+	FVector2D ScreenPos = (CanvasSize * DrawLocation) - (BrushSize * 0.5f);
+	Canvas->K2_DrawMaterial(Mat_Brush, ScreenPos, FVector2D(BrushSize, BrushSize), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f), 90.0f, FVector2D(0.5f, 0.5f));
+	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CanvasContext);
+}
 

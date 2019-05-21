@@ -17,8 +17,8 @@ void APlayableCharController::BeginPlay()
 	MinCameraDistance = 200.0f;
 	MaxCameraDistance = 2000.0f;
 
+	// Set up character and camera pawns for easy access
 	CharacterPawn = Cast<APlayableCharacter>(GetPawn());
-	
 	UWorld* world = GetWorld();
 	if (world)
 	{
@@ -35,6 +35,7 @@ void APlayableCharController::SetupInputComponent()
 	InputComponent->BindAxis("Camera_MovementForward", this, &APlayableCharController::Camera_MovementForward);
 	InputComponent->BindAxis("Camera_MovementRight", this, &APlayableCharController::Camera_MovementRight);
 	InputComponent->BindAxis("Camera_Zoom", this, &APlayableCharController::Camera_Zoom);
+	InputComponent->BindAxis("Editor_Paint", this, &APlayableCharController::Editor_Paint);
 }
 
 //
@@ -78,6 +79,11 @@ void APlayableCharController::Camera_Zoom(float AxisValue)
 		CameraPawn->SpringArm->TargetArmLength = FMath::Clamp(CameraPawn->SpringArm->TargetArmLength + Delta, MinCameraDistance, MaxCameraDistance);
 		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString(FString::SanitizeFloat(CameraPawn->SpringArm->TargetArmLength)));
 	}
+}
+
+void APlayableCharController::Editor_Paint(float AxisValue)
+{
+
 }
 
 //
