@@ -14,7 +14,8 @@ class DND_TOOL_API ADnD_ToolGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	
-	
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+		FVector2D GetUVCollision(const FHitResult Hit, float Test);
 	
 };

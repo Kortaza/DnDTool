@@ -1,10 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharController.h"
+#include "System/Globals.h"
 #include "Actors/Environment/Navigatable/Ground.h"
+#include "DnD_ToolGameModeBase.h"
+
 #include "Engine/World.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "System/Globals.h"
+
 
 #include "Engine.h"
 
@@ -120,12 +123,18 @@ void APlayableCharController::Editor_Paint(float AxisValue)
 				//		bSuccess = BodySetup->CalcUVAtLocation(LocalHitPos, HitResult.FaceIndex, 0, DrawLocation);
 				//	}
 				//}
-
-				if (UGameplayStatics::FindCollisionUV(HitResult, 0, DrawLocation))
+				FString str = "C++" + MousePos.ToString() + " // " + MouseDir.ToString();
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, str);
+				ADnD_ToolGameModeBase* GameMode = Cast<ADnD_ToolGameModeBase>(UGameplayStatics::GetGameMode(this));
+				if (GameMode)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "FindCollisionUV = True");
+					DrawLocation = GameMode->GetUVCollision(HitResult, 5.0f);
 				}
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "PLAYERCHARCON = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "GameMode not found");
+				}
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "PLAYERCHARCON DrawLoc = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
 				AGround* Ground = Cast<AGround>(HitResult.Actor);
 				if (Ground)
 				{
