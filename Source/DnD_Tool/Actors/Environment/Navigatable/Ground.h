@@ -42,9 +42,6 @@ public:
 		UStaticMeshComponent* GroundPlane;
 
 	UPROPERTY(EditAnywhere, Category = "Texture Editing")
-		TSubclassOf<AGroundTile> GroundTileParent;
-
-	UPROPERTY(EditAnywhere, Category = "Texture Editing")
 		UMaterialInterface* MatInterface_Canvas;
 
 	UPROPERTY(EditAnywhere, Category = "Texture Editing")

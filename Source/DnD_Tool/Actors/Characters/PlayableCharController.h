@@ -48,6 +48,8 @@ protected:
 	float MaxCameraDistance;
 
 	// Editor Variables - Should move to Editor Controller in future
+	FVector2D LastTileEdited = FVector2D(-1.0f, -1.0f);
+	bool TextureEditorFlipFlop = true;
 	UPROPERTY(EditAnywhere, Category = "Editor Textures")
 	UTexture2D* Tex_BasicGrass;
 };

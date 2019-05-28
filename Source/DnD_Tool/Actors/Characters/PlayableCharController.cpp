@@ -87,7 +87,6 @@ void APlayableCharController::Camera_Zoom(float AxisValue)
 	{
 		float Delta = AxisValue * CameraZoomMuliplier;
 		CameraPawn->SpringArm->TargetArmLength = FMath::Clamp(CameraPawn->SpringArm->TargetArmLength + Delta, MinCameraDistance, MaxCameraDistance);
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString(FString::SanitizeFloat(CameraPawn->SpringArm->TargetArmLength)));
 	}
 }
 
@@ -95,54 +94,45 @@ void APlayableCharController::Editor_Paint(float AxisValue)
 {
 	if (AxisValue == 1.0f)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString("APlayableCharController::Editor_Paint()"));
-		// Find the Mouse 3D position and direction from the screen
-		FVector MousePos, MouseDir;
-		DeprojectMousePositionToWorld(MousePos, MouseDir);
-
-		UWorld* world = GetWorld();
-		if (world)
+		if (TextureEditorFlipFlop == true)
 		{
-			// Raycast from the screen position onto the game world
-			FHitResult HitResult;
-			FCollisionQueryParams QueryParams = FCollisionQueryParams();
-			QueryParams.bTraceComplex = true;
-			if (world->LineTraceSingleByChannel(HitResult, MousePos, MousePos + (MouseDir * 10000.0f), ECC_Navigation, QueryParams))
+			ADnD_ToolGameModeBase* GameMode = Cast<ADnD_ToolGameModeBase>(UGameplayStatics::GetGameMode(this));
+			if (GameMode)
 			{
-				// 
-				FVector2D DrawLocation;
-				//bool bSuccess = false;
-				//UPrimitiveComponent* HitPrimComp = HitResult.Component.Get();
-				//if (HitPrimComp)
-				//{
-				//	UBodySetup* BodySetup = HitPrimComp->GetBodySetup();
-				//	if (BodySetup)
-				//	{
-				//		const FVector LocalHitPos = HitPrimComp->GetComponentToWorld().InverseTransformPosition(HitResult.Location);
-				//
-				//		bSuccess = BodySetup->CalcUVAtLocation(LocalHitPos, HitResult.FaceIndex, 0, DrawLocation);
-				//	}
-				//}
-				FString str = "C++" + MousePos.ToString() + " // " + MouseDir.ToString();
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, str);
-				ADnD_ToolGameModeBase* GameMode = Cast<ADnD_ToolGameModeBase>(UGameplayStatics::GetGameMode(this));
-				if (GameMode)
+				FHitResult HitResult;
+				if (GameMode->ComplexNavigationTraceFromMouse(this, HitResult, Globals::LineTraceLength))
 				{
-					DrawLocation = GameMode->GetUVCollision(HitResult, 5.0f);
+					AGround* Ground = Cast<AGround>(HitResult.Actor);
+					if (Ground)
+					{
+						FVector2D DrawLocation;
+						UGameplayStatics::FindCollisionUV(HitResult, 0, DrawLocation);
+
+						FVector GroundScale = Ground->GetActorScale3D();
+						FVector2D UVClosestGrid = FVector2D(DrawLocation.X * GroundScale.X, DrawLocation.Y * GroundScale.Y);
+						UVClosestGrid = FVector2D(FMath::FloorToInt(UVClosestGrid.X), FMath::FloorToInt(UVClosestGrid.Y));
+						UVClosestGrid = FVector2D(UVClosestGrid.X / GroundScale.X, UVClosestGrid.Y / GroundScale.Y);
+
+						if (LastTileEdited != UVClosestGrid)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Edit Tile  X :  " + FString::SanitizeFloat(UVClosestGrid.X) + "  //  Y :  " + FString::SanitizeFloat(UVClosestGrid.Y));
+							Ground->DrawBrush(Tex_BasicGrass, Globals::GridSize, UVClosestGrid);
+							LastTileEdited = UVClosestGrid;
+						}
+					}
 				}
-				else
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "GameMode not found");
-				}
-				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "PLAYERCHARCON DrawLoc = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
-				AGround* Ground = Cast<AGround>(HitResult.Actor);
-				if (Ground)
-				{
-					Ground->DrawBrush(Tex_BasicGrass, Globals::GridSize, DrawLocation);
-				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "GameMode not found");
 			}
 		}
 	}
+	else
+	{
+		LastTileEdited = FVector2D(-1.0f, -1.0f);
+	}
+	TextureEditorFlipFlop = !TextureEditorFlipFlop;
 }
 
 //

@@ -16,6 +16,5 @@ class DND_TOOL_API ADnD_ToolGameModeBase : public AGameModeBase
 	
 public:
 	UFUNCTION(BlueprintImplementableEvent)
-		FVector2D GetUVCollision(const FHitResult Hit, float Test);
-	
+		bool ComplexNavigationTraceFromMouse(APlayerController* Controller, FHitResult& HitResult, float LineTraceLength);
 };

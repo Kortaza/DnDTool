@@ -7,6 +7,6 @@
 namespace Globals
 {
 	const float GridSize = 50.0f;
-
+	const float LineTraceLength = 10000.0f;
 
 }

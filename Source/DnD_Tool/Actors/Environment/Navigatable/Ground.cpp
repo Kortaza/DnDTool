@@ -17,6 +17,7 @@ AGround::AGround()
 
 	GroundPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GroundPlane"));
 	GroundPlane->SetupAttachment(Origin);
+	GroundPlane->SetRelativeScale3D(FVector(Globals::GridSize / 100.0f));
 }
 
 // Called every frame
@@ -57,12 +58,12 @@ void AGround::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, 1000, 1000);
-	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
+	FVector Scale = GetActorScale3D() * Globals::GridSize;
+	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, Scale.X, Scale.Y);
+	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget, FLinearColor::White);
 	
 	Mat_Canvas = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Canvas);
 	Mat_Canvas->SetTextureParameterValue("RenderTarget", RenderTarget);
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, GroundPlane->GetName());
 	GroundPlane->SetMaterial(0, Mat_Canvas);
 
 	Mat_Brush = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Brush);
@@ -75,12 +76,6 @@ void AGround::BeginPlay()
 
 void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::FString("AGround::DrawBrush()"));
-
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, BrushTexture->GetName());
-	//GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, FString::SanitizeFloat(BrushSize));
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "GROUND = " + FString::SanitizeFloat(DrawLocation.X) + " : " + FString::SanitizeFloat(DrawLocation.Y));
-
 	Mat_Brush->SetTextureParameterValue("BrushTexture", BrushTexture);
 
 	UCanvas* Canvas;
@@ -88,7 +83,7 @@ void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D Dra
 	FDrawToRenderTargetContext CanvasContext;
 
 	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, CanvasSize, CanvasContext);
-	FVector2D ScreenPos = (CanvasSize * DrawLocation) - (BrushSize * 0.5f);
+	FVector2D ScreenPos = (CanvasSize * DrawLocation);
 	Canvas->K2_DrawMaterial(Mat_Brush, ScreenPos, FVector2D(BrushSize, BrushSize), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f), 90.0f, FVector2D(0.5f, 0.5f));
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CanvasContext);
 }
