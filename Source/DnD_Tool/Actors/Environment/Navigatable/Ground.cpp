@@ -27,39 +27,14 @@ void AGround::Tick(float DeltaTime)
 
 }
 
-//void AGround::ChangeGridSize(int DimensionX, int DimensionY)
-//{
-//	while (TileArray.empty() == false)
-//	{
-//		while (TileArray.back()->empty() == false)
-//		{
-//			(TileArray.back())->back()->Destroy();
-//			(TileArray.back())->pop_back();
-//		}
-//		TileArray.pop_back();
-//	}
-//	
-//	FVector OriginLoc = GetActorLocation();
-//	for (int Col = 0; Col < DimensionX; Col++)
-//	{
-//		std::vector<AGroundTile*>* tempArray = new std::vector<AGroundTile*>();
-//		TileArray.push_back(tempArray);
-//		for (int Row = 0; Row < DimensionY; Row++)
-//		{
-//			FVector Loc = FVector(Col * Globals::GridSize + OriginLoc.X, Row * Globals::GridSize + OriginLoc.Y, OriginLoc.Z);
-//			AGroundTile* Tile = GetWorld()->SpawnActor<AGroundTile>(GroundTileParent, Loc, FRotator(0.0f, 0.0f, 0.0f));
-//			TileArray[Col]->push_back(Tile);
-//		}
-//	}
-//}
-
 // Called when the game starts or when spawned
 void AGround::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	FVector Scale = GetActorScale3D() * Globals::GridSize;
-	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, Scale.X, Scale.Y);
+	FVector Scale = GetActorScale3D();
+	FVector PixelSize = Scale * Globals::GridSize;
+	RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, PixelSize.X, PixelSize.Y);
 	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget, FLinearColor::White);
 	
 	Mat_Canvas = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Canvas);
@@ -67,12 +42,21 @@ void AGround::BeginPlay()
 	GroundPlane->SetMaterial(0, Mat_Canvas);
 
 	Mat_Brush = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, MatInterface_Brush);
-}
 
-//void AGround::PostEditChangeProperty(struct FPropertyChangedEvent& e)
-//{
-//	Super::PostEditChangeProperty(e);
-//}
+	// Create the Vector of Tiles
+	// TODO: Delete the vectors first and have save/load
+	TileBounds = FIntPoint(Scale.X, Scale.Y);
+	for (int Row = 0; Row < Scale.X; Row++)
+	{
+		std::vector<FNavigatableTile*>* TempVector = new std::vector<FNavigatableTile*>();
+		Tiles.push_back(TempVector);
+		for (int Col = 0; Col < Scale.Y; Col++)
+		{
+			FNavigatableTile* TempTile = new FNavigatableTile();
+			Tiles[Row]->push_back(TempTile);
+		}
+	}
+}
 
 void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation)
 {

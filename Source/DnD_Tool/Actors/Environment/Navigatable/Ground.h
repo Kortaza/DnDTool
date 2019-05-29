@@ -13,6 +13,24 @@
 
 #include "Ground.generated.h"
 
+UENUM()
+enum ETERRAINTEXTURE
+{
+	EMPTY,
+	GRASS,
+};
+
+USTRUCT()
+struct FNavigatableTile
+{
+	GENERATED_BODY()
+
+	ETERRAINTEXTURE TerrainTexture = ETERRAINTEXTURE::EMPTY;
+	bool DifficultTerrain = false;
+	float HeightLevel = 0.0f;
+};
+
+
 UCLASS()
 class DND_TOOL_API AGround : public AActor
 {
@@ -23,14 +41,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation);
 
-	//UFUNCTION(BlueprintCallable)
-	//	void ChangeGridSize(int DimensionX, int DimensionY);
-
 protected:
 	virtual void BeginPlay() override;
-	//virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
-
-	
 
 
 	// VARIABLES
@@ -47,10 +59,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Texture Editing")
 		UMaterialInterface* MatInterface_Brush;
 
-	
+
+	// 
+	std::vector<std::vector<FNavigatableTile*>*> Tiles;
+	FIntPoint TileBounds;
+
 protected:
-	//std::vector< std::vector<AGroundTile*>*> TileArray;
 	UTextureRenderTarget2D* RenderTarget;
 	UMaterialInstanceDynamic* Mat_Canvas;
 	UMaterialInstanceDynamic* Mat_Brush;
+
+	
 };

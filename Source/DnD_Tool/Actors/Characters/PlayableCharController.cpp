@@ -115,7 +115,6 @@ void APlayableCharController::Editor_Paint(float AxisValue)
 
 						if (LastTileEdited != UVClosestGrid)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Edit Tile  X :  " + FString::SanitizeFloat(UVClosestGrid.X) + "  //  Y :  " + FString::SanitizeFloat(UVClosestGrid.Y));
 							Ground->DrawBrush(Tex_BasicGrass, Globals::GridSize, UVClosestGrid);
 							LastTileEdited = UVClosestGrid;
 						}
