@@ -41,7 +41,7 @@ void APlayableCharController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("MouseClick", IE_Pressed , this, &APlayableCharController::MouseClickMovement);
+	InputComponent->BindAction("Character_Move", IE_Pressed , this, &APlayableCharController::Character_Move);
 	InputComponent->BindAxis("Camera_MovementForward", this, &APlayableCharController::Camera_MovementForward);
 	InputComponent->BindAxis("Camera_MovementRight", this, &APlayableCharController::Camera_MovementRight);
 	InputComponent->BindAxis("Camera_Zoom", this, &APlayableCharController::Camera_Zoom);
@@ -49,7 +49,7 @@ void APlayableCharController::SetupInputComponent()
 }
 
 //
-void APlayableCharController::MouseClickMovement()
+void APlayableCharController::Character_Move()
 {
 	// Find the Mouse 3D position and direction from the screen
 	FVector MousePos, MouseDir;
@@ -63,7 +63,15 @@ void APlayableCharController::MouseClickMovement()
 		if (world->LineTraceSingleByChannel(HitResult, MousePos, MousePos + (MouseDir * 10000.0f), ECC_Navigation))
 		{
 			// 
-			CharacterPawn->StartMovement(LocateTileCenter(HitResult.Location));
+			AGround* Ground = Cast<AGround>(HitResult.Actor);
+			if (Ground)
+			{
+				FNavigatableTile* NavTile = Ground->FindNavigatableTile(HitResult.Location);
+				CharacterPawn->FindPath(Ground, NavTile);
+				
+				CharacterPawn->StartMovement(NavTile->CentreWorldLocation);
+
+			}
 		}
 	}
 }
@@ -116,6 +124,7 @@ void APlayableCharController::Editor_Paint(float AxisValue)
 						if (LastTileEdited != UVClosestGrid)
 						{
 							Ground->DrawBrush(Tex_BasicGrass, Globals::GridSize, UVClosestGrid);
+							FNavigatableTile* NavTile = Ground->FindNavigatableTile(HitResult.Location);
 							LastTileEdited = UVClosestGrid;
 						}
 					}
@@ -134,7 +143,7 @@ void APlayableCharController::Editor_Paint(float AxisValue)
 	TextureEditorFlipFlop = !TextureEditorFlipFlop;
 }
 
-//
+// Depreciated
 FVector APlayableCharController::LocateTileCenter(FVector ClickPos)
 {
 	// Find the clicked tile and the origin point (bottom left corner) 

@@ -2,6 +2,7 @@
 
 #include "PlayableCharacter.h"
 #include "PlayableCharController.h"
+#include "System/Globals.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
@@ -72,8 +73,52 @@ void APlayableCharacter::UpdateMovement(float DeltaTime)
 	}
 }
 
+bool APlayableCharacter::FindPath(AGround* Ground, FNavigatableTile* Destination)
+{
+	if (Pathfinder)
+	{
+		delete Pathfinder;
+	}
+	Pathfinder = new Pathfinding();
+	std::vector<FNavigatableTile*> Path = Pathfinder->Start(Ground, CurrentTile, Destination);
+	if (Path.size() == 0)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "NO PATH FOUND");	
+	}
+	else
+	{
+		CurrentTile = Destination;
+	}
+
+	// Remove
+	return false;
+}
+
+bool APlayableCharacter::TraversePath(float DeltaTime)
+{
+	// Remove
+	return false;
+}
+
 // Called when the game starts or when spawned
 void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		FHitResult HitResult;
+		FVector StartLoc = GetActorLocation();
+		FVector EndLoc = StartLoc + (-GetActorUpVector() * 10000.0f);
+		if (World->LineTraceSingleByChannel(HitResult, StartLoc, EndLoc, ECC_Navigation))
+		{
+			AGround* Ground = Cast<AGround>(HitResult.Actor);
+			if (Ground)
+			{
+				CurrentTile = Ground->FindNavigatableTile(HitResult.Location);
+				SetActorLocation(CurrentTile->CentreWorldLocation);
+			}
+		}
+	}
 }

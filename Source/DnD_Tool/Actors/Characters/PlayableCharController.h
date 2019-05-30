@@ -27,7 +27,7 @@ public:
 
 protected:
 	// Input Bindings
-	virtual void MouseClickMovement();
+	virtual void Character_Move();
 	virtual void Camera_MovementForward(float AxisValue);
 	virtual void Camera_MovementRight(float AxisValue);
 	virtual void Camera_Zoom(float AxisValue);

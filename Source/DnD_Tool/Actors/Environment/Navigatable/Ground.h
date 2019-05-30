@@ -13,21 +13,24 @@
 
 #include "Ground.generated.h"
 
-UENUM()
-enum ETERRAINTEXTURE
-{
-	EMPTY,
-	GRASS,
-};
-
 USTRUCT()
 struct FNavigatableTile
 {
 	GENERATED_BODY()
 
-	ETERRAINTEXTURE TerrainTexture = ETERRAINTEXTURE::EMPTY;
-	bool DifficultTerrain = false;
-	float HeightLevel = 0.0f;
+	unsigned int		ID							= 0;
+	FIntPoint			Index = FIntPoint(0, 0);
+	bool				bTraversable				= true;
+	bool				bOccupied					= false;
+	bool				bDifficultTerrain			= false;
+	float				HeightLevel					= 0.0f;
+	FVector				CentreWorldLocation			= FVector(0.0f, 0.0f, 0.0f);
+
+	//ACharacter*		OccupyingCharacter;
+	// enum				Wall_North
+	// enum				Wall_South
+	// enum				Wall_East
+	// enum				Wall_West
 };
 
 
@@ -40,6 +43,7 @@ public:
 	AGround();
 	virtual void Tick(float DeltaTime) override;
 	virtual void DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D DrawLocation);
+	virtual FNavigatableTile* FindNavigatableTile(FVector WorldLoc);
 
 protected:
 	virtual void BeginPlay() override;
@@ -63,11 +67,12 @@ public:
 	// 
 	std::vector<std::vector<FNavigatableTile*>*> Tiles;
 	FIntPoint TileBounds;
+	
 
 protected:
 	UTextureRenderTarget2D* RenderTarget;
 	UMaterialInstanceDynamic* Mat_Canvas;
 	UMaterialInstanceDynamic* Mat_Brush;
 
-	
+	static int NextTileID;
 };

@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Pathfinding.h"
+#include "Engine.h"
 
 Pathfinding::Pathfinding()
 {
@@ -10,55 +11,152 @@ Pathfinding::~Pathfinding()
 {
 }
 
-bool Pathfinding::Start(AGround* Ground, FIntPoint Origin, FIntPoint Destination)
+std::vector<FNavigatableTile*> Pathfinding::Start(AGround* Ground, FNavigatableTile* Origin, FNavigatableTile* Destination)
 {
-	this->Origin.Location = Origin;
-	this->Origin.MovementCost = 0;
-	this->Origin.PreviousNode = NULL;
-	this->Destination.Location = Destination;
-	this->Destination.MovementCost = 10000;		// Arbitrary large number
-	this->Destination.PreviousNode = NULL;
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Pathfinding::Start");
 
+	std::vector<FNavigatableTile*> EmptyPath;
+	if (Ground == NULL || Origin == NULL || Destination == NULL)
+	{
+		return EmptyPath;
+	}
+	this->Ground = Ground;
+	this->Origin = Origin;
+	this->Destination = Destination;
+
+	DoubleDiagonal = false;
+
+	// Clear previous lists/maps for reuse
+	PathfindingCostMap.clear();
 	ClosedList.clear();
 	OpenList.clear();
-	OptimalPath.clear();
 
-	if (Origin != Destination)
+	AddToOpenList(Origin, NULL, 0);
+	FindPath();
+
+	if (PathfindingCostMap.find(Destination->ID) != PathfindingCostMap.end())
 	{
-		OpenList.push_back(&this->Origin);
-		if (FindPath(Ground))
+		if (PathfindingCostMap[Destination->ID].PreviousNode != NULL)
 		{
-			TraversePath();
+			return CreateOptimalPath();
 		}
 	}
 
-	// REMOVE
-	return true;
+	return EmptyPath;
 }
 
-bool Pathfinding::FindPath(AGround* Ground)
+bool Pathfinding::FindPath()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Pathfinding::FindPath");
 	if (OpenList.empty() == true)
 	{
 		// base case to stop recursion
 		return false;
 	}
+	FNavigatableTile* CurrentTile = OpenList[0];
+	OpenList.erase(OpenList.begin());
+	ClosedList.push_back(CurrentTile);
 
-	FPathfindingNode* CurrentNode = *(OpenList.begin());
-	ClosedList.push_back(CurrentNode);
-
-	if (CurrentNode->Location == Destination.Location)
+	for (int RowOffset = -1; RowOffset <= 1; RowOffset++)
 	{
-		Destination.PreviousNode = CurrentNode;
+		for (int ColOffset = -1; ColOffset <= 1; ColOffset++)
+		{
+			if ((RowOffset == 0 && ColOffset == 0) == false)
+			{			
+				FIntPoint TileIndex = FIntPoint(CurrentTile->Index.X + RowOffset, CurrentTile->Index.Y + ColOffset);
+				if (ValidateTileIndex(TileIndex))
+				{
+					// ADD extra code to ensure that the way is clear to move between tiles
+					
+					FNavigatableTile* NewTile = (*Ground->Tiles[TileIndex.X])[TileIndex.Y];
+					AddToOpenList(NewTile, CurrentTile, CalculateCostOfMovement(RowOffset, ColOffset));
+				}
+			}
+		}
 	}
 
+	FindPath();
 
 	//REMOVE
 	return true;
 }
 
-bool Pathfinding::TraversePath()
+bool Pathfinding::ValidateTileIndex(FIntPoint NextTileIndex)
 {
-	//REMOVE
+	if (	NextTileIndex.X < 0 || NextTileIndex.X >= Ground->GetActorScale3D().X
+		||	NextTileIndex.Y < 0 || NextTileIndex.Y >= Ground->GetActorScale3D().Y)
+	{
+		return false;
+	}
 	return true;
+}
+
+bool Pathfinding::AddToOpenList(FNavigatableTile* NewNavTile, FNavigatableTile* CurrentNavTile, int Cost)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "Pathfinding::AddToOpenList");
+	if (PathfindingCostMap.find(NewNavTile->ID) == PathfindingCostMap.end())
+	{
+		FPathfindingNode NewNode;
+		if (CurrentNavTile)
+		{
+			NewNode.PreviousNode = CurrentNavTile;
+			NewNode.MovementCost = PathfindingCostMap[CurrentNavTile->ID].MovementCost + Cost;
+		}
+		else
+		{
+			NewNode.PreviousNode = NULL;
+			NewNode.MovementCost = 0;
+		}
+
+		PathfindingCostMap[NewNavTile->ID] = NewNode;
+		OpenList.push_back(NewNavTile);
+		return true;
+	}
+
+	if (PathfindingCostMap[CurrentNavTile->ID].MovementCost + Cost < PathfindingCostMap[NewNavTile->ID].MovementCost)
+	{
+		PathfindingCostMap[NewNavTile->ID].MovementCost = PathfindingCostMap[CurrentNavTile->ID].MovementCost + Cost;
+		PathfindingCostMap[NewNavTile->ID].PreviousNode = CurrentNavTile;
+	}
+	return false;
+}
+
+int Pathfinding::CalculateCostOfMovement(int RowOffset, int ColOffset)
+{
+	int CostOfMovement;
+	if (RowOffset == 0 || ColOffset == 0)
+	{
+		CostOfMovement = 5;
+	}
+	else
+	{
+		if (DoubleDiagonal == true)
+		{
+			CostOfMovement = 10;
+		}
+		else
+		{
+			CostOfMovement = 5;
+		}
+		DoubleDiagonal = !DoubleDiagonal;
+	}
+	return CostOfMovement;
+}
+
+std::vector<FNavigatableTile*> Pathfinding::CreateOptimalPath()
+{
+	std::vector<FNavigatableTile*> OptimalPath;
+	OptimalPath.push_back(Destination);
+
+	int num = 0;
+	while (OptimalPath.back()->ID != Origin->ID)
+	{
+		FString str = FString::FromInt(num) + ":  X :  " + FString::FromInt(OptimalPath.back()->Index.X) + "  //  Y :  " + FString::FromInt(OptimalPath.back()->Index.Y);
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, str);
+		num++;
+
+		OptimalPath.push_back(PathfindingCostMap[OptimalPath.back()->ID].PreviousNode);
+	}
+	OptimalPath.pop_back(); // Remove the Origin Node;
+	return OptimalPath;
 }

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include <vector>
+#include <map>
 #include "Actors/Environment/Navigatable/Ground.h"
 
 struct FPathfindingNode
 {
-	FIntPoint Location = FIntPoint(0, 0);
 	int MovementCost = 10000;
-	FPathfindingNode* PreviousNode = NULL;
+	FNavigatableTile* PreviousNode = NULL;
 };
 
 /**
@@ -22,15 +22,22 @@ public:
 	Pathfinding();
 	~Pathfinding();
 
-	bool Start(AGround* Ground, FIntPoint Origin, FIntPoint Destination);
-	bool FindPath(AGround* Ground);
-	bool TraversePath();
-
+	std::vector<FNavigatableTile*> Start(AGround* Ground, FNavigatableTile* Origin, FNavigatableTile*  Destination);
+	
 protected:
-	FPathfindingNode Origin;
-	FPathfindingNode Destination;
-	std::vector<FPathfindingNode*> ClosedList;
-	std::vector<FPathfindingNode*> OpenList;
-	std::vector<FPathfindingNode*> OptimalPath;
+	bool FindPath();
+	bool ValidateTileIndex(FIntPoint NextTileIndex);
+	bool AddToOpenList(FNavigatableTile* NewNavTile, FNavigatableTile* CurrentNavTile, int Cos);
+	int CalculateCostOfMovement(int RowOffset, int ColOffset);
+	std::vector<FNavigatableTile*> CreateOptimalPath();
+
+	// VARIABLES
+protected:
+	AGround* Ground;
+	FNavigatableTile* Origin;
+	FNavigatableTile* Destination;
+	std::map<unsigned int, FPathfindingNode> PathfindingCostMap;
+	std::vector<FNavigatableTile*> ClosedList;
+	std::vector<FNavigatableTile*> OpenList;
 	bool DoubleDiagonal = false;
 };

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "System/Pathfinding.h"
+#include "Actors/Environment/Navigatable/Ground.h"
 
 #include "PlayableCharacter.generated.h"
 
@@ -17,6 +19,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void StartMovement(FVector Location);
 	virtual void UpdateMovement(float DeltaTime);
+
+	virtual bool FindPath(AGround* Ground, FNavigatableTile* Destination);
+	virtual bool TraversePath(float DeltaTime);
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,6 +43,8 @@ private:
 	float DistanceLerpSpeed_Units;
 
 	// Movement Tracking
+	Pathfinding* Pathfinder;
+	FNavigatableTile* CurrentTile;
 	bool Moving;
 	FVector StartLocation;
 	FVector EndLocation;

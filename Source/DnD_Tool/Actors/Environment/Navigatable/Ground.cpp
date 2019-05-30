@@ -5,6 +5,7 @@
 
 #include "Engine.h"
 
+int AGround::NextTileID = 1;
 
 // Sets default values
 AGround::AGround()
@@ -18,6 +19,7 @@ AGround::AGround()
 	GroundPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GroundPlane"));
 	GroundPlane->SetupAttachment(Origin);
 	GroundPlane->SetRelativeScale3D(FVector(Globals::GridSize / 100.0f));
+	GroundPlane->SetRelativeLocation(FVector(Globals::GridSize * 0.5f, Globals::GridSize * 0.5f, 0.0f));
 }
 
 // Called every frame
@@ -53,6 +55,16 @@ void AGround::BeginPlay()
 		for (int Col = 0; Col < Scale.Y; Col++)
 		{
 			FNavigatableTile* TempTile = new FNavigatableTile();
+			TempTile->ID = NextTileID++;
+			TempTile->Index = FIntPoint(Row, Col);
+
+			FVector GroundOrigin = GetActorLocation();
+			FVector CentreWorldLoc;
+			CentreWorldLoc.X = ((float)Row + 0.5f) * Globals::GridSize + GroundOrigin.X;
+			CentreWorldLoc.Y = ((float)Col + 0.5f) * Globals::GridSize + GroundOrigin.Y;
+			CentreWorldLoc.Z = GroundOrigin.Z;
+			TempTile->CentreWorldLocation = CentreWorldLoc;
+
 			Tiles[Row]->push_back(TempTile);
 		}
 	}
@@ -70,5 +82,20 @@ void AGround::DrawBrush(UTexture2D* BrushTexture, float BrushSize, FVector2D Dra
 	FVector2D ScreenPos = (CanvasSize * DrawLocation);
 	Canvas->K2_DrawMaterial(Mat_Brush, ScreenPos, FVector2D(BrushSize, BrushSize), FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f), 90.0f, FVector2D(0.5f, 0.5f));
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CanvasContext);
+}
+
+FNavigatableTile* AGround::FindNavigatableTile(FVector WorldLoc)
+{
+	FVector Scale = GetActorScale3D();
+	FVector Offset = WorldLoc - GetActorLocation();
+	
+	FIntPoint TileIndex;
+	TileIndex.X = FMath::FloorToInt(Offset.X / Globals::GridSize);
+	TileIndex.Y = FMath::FloorToInt(Offset.Y / Globals::GridSize);
+
+	FNavigatableTile* NavTile = (*Tiles[TileIndex.X])[TileIndex.Y];
+
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Blue, "X = " + FString::FromInt(TileIndex.X) + "  //  Y = " + FString::FromInt(TileIndex.Y));
+	return NavTile;
 }
 
